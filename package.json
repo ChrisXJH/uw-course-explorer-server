@@ -1,0 +1,36 @@
+{
+  "name": "uw-course-explorer-server",
+  "version": "1.0.0",
+  "description": "Server side for UwCourseExplorer",
+  "main": "dist/js/index.js",
+  "scripts": {
+    "build": "babel --presets es2015 -d dist/js/ src/js/",
+    "build-test": "babel --presets es2015 -d dist/test/ src/test/",
+    "start": "npm run build && node dist/js",
+    "test": "npm run build-test && mocha dist/test/**/*-test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChrisXJH/uw-course-explorer-server.git"
+  },
+  "keywords": [
+    "UwCourseExplorer"
+  ],
+  "author": "Chris Xu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ChrisXJH/uw-course-explorer-server/issues"
+  },
+  "homepage": "https://github.com/ChrisXJH/uw-course-explorer-server#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "chai": "^4.2.0",
+    "mocha": "^6.1.4"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4"
+  }
+}
