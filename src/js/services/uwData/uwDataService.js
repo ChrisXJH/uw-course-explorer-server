@@ -4,6 +4,8 @@ import { getUwBackendUrl, getUwApiKey } from '../../config/config';
 const uwBackendUrl = getUwBackendUrl();
 const uwApiKey = getUwApiKey();
 
+const parseResponse = res => res.data;
+
 export function uwDataGet(target) {
   const options = {
     uri: `${uwBackendUrl}/${target}?key=${uwApiKey}`,
@@ -19,21 +21,23 @@ export function getSubjectCodes() {
 }
 
 export function getCourses() {
-  return uwDataGet('courses.json');
+  return uwDataGet('courses.json').then(parseResponse);
 }
 
 export function getCoursesBySubject(subject) {
-  return uwDataGet(`courses/${subject}.json`);
+  return uwDataGet(`courses/${subject}.json`).then(parseResponse);
 }
 
 export function getCourseById(courseId) {
-  return uwDataGet(`courses/${courseId}.json`);
+  return uwDataGet(`courses/${courseId}.json`).then(parseResponse);
 }
 
 export function getTerms() {
-  return uwDataGet('terms/list.json');
+  return uwDataGet('terms/list.json').then(parseResponse);
 }
 
 export function getSchedule(termId, subject, courseNumber) {
-  return uwDataGet(`terms/${termId}/${subject}/${courseNumber}/schedule.json`);
+  return uwDataGet(
+    `terms/${termId}/${subject}/${courseNumber}/schedule.json`
+  ).then(parseResponse);
 }
