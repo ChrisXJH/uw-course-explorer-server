@@ -1,6 +1,11 @@
-const port = 3000;
-const uwApiKey = 'a9e6e1c758257c4222b19293fd7ff2be';
+const port = 8000;
+const uwApiKey = '';
 const uwBackendUrl = 'https://api.uwaterloo.ca/v2';
+const env = 'dev';
+
+export function getEnv() {
+  return env;
+}
 
 export function getPort() {
   return port;

@@ -17,7 +17,7 @@ export function uwDataGet(target) {
 }
 
 export function getSubjectCodes() {
-  return uwDataGet('codes/subjects.json');
+  return uwDataGet('codes/subjects.json').then(parseResponse);
 }
 
 export function getCourses() {
