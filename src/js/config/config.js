@@ -2,10 +2,14 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const env = process.env.NODE_ENV;
 const port = process.env.PORT || 8000;
 const uwApiKey = process.env.UW_API_KEY;
 const uwBackendUrl = process.env.UW_API_URL;
-const env = process.env.NODE_ENV;
+const secret = process.env.SECRET;
+
+export const FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID;
+export const FACEBOOK_APP_SECRET = process.env.FACEBOOK_APP_SECRET;
 
 export function getEnv() {
   return env;
@@ -21,4 +25,8 @@ export function getUwApiKey() {
 
 export function getUwBackendUrl() {
   return uwBackendUrl;
+}
+
+export function getSecret() {
+  return secret;
 }
