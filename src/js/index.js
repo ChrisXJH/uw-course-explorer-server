@@ -10,46 +10,64 @@ import passport from 'passport';
 import configPassport from './config/configPassport';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
+import configDB from './config/configDB';
+import ConnectMongo from 'connect-mongo';
 
-const app = express();
+configDB().then(dbConnection => {
+  const app = express();
+  const MongoStore = ConnectMongo(session);
+  const port = getPort();
 
-const port = getPort();
+  app.use(bodyParser.json());
+  app.use(cookieParser());
 
-app.use(bodyParser.json());
-app.use(cookieParser());
+  const corsOptions = {
+    credentials: true,
+    origin: true,
+    methods: ['GET', 'PUT', 'POST', 'DELETE', 'UPDATE', 'OPTIONS'],
+    allowedHeaders: [
+      'X-Requested-With',
+      'X-HTTP-Method-Override',
+      'Content-Type',
+      'Accept'
+    ]
+  };
 
-const corsOptions = {
-  credentials: true,
-  origin: true,
-  methods: ['GET', 'PUT', 'POST', 'DELETE', 'UPDATE', 'OPTIONS'],
-  allowedHeaders: [
-    'X-Requested-With',
-    'X-HTTP-Method-Override',
-    'Content-Type',
-    'Accept'
-  ]
-};
+  app.use(cors(corsOptions));
 
-app.use(cors(corsOptions));
+  app.set('trust proxy', 1);
+  app.use(
+    session({
+      secret: getSecret(),
+      resave: false,
+      saveUninitialized: false,
+      cookie: { secure: getEnv() === 'prod', maxAge: 7 * 24 * 60 * 60 * 1000 },
+      store: new MongoStore({
+        mongooseConnection: dbConnection
+      })
+    })
+  );
 
-app.set('trust proxy', 1);
-app.use(
-  session({
-    secret: getSecret(),
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: getEnv() === 'prod' }
-  })
-);
-configPassport();
+  configPassport();
 
-app.use(passport.initialize());
-app.use(passport.session());
+  app.use(passport.initialize());
+  app.use(passport.session());
 
-// routers
-app.use('/subject', SubjectController);
-app.use('/course', CourseController);
-app.use('/term', TermController);
-app.use('/user', UserController);
+  app.use((req, res, next) => {
+    const { method, url, body } = req;
+    console.log(`${method} ${url}`);
+    if (Object.keys(body).length > 0) {
+      console.log(body);
+      console.log();
+    }
+    next();
+  });
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+  // routers
+  app.use('/subject', SubjectController);
+  app.use('/course', CourseController);
+  app.use('/term', TermController);
+  app.use('/user', UserController);
+
+  app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+});
