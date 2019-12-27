@@ -8,7 +8,11 @@ const userSchema = new Schema({
       provider: { type: String, index: true },
       id: { type: String, index: true }
     }
-  ]
+  ],
+  shortlistedCourses: {
+    type: [{ type: String }],
+    default: []
+  }
 });
 
 userSchema.set('toObject', {

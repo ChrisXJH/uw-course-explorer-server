@@ -4,6 +4,8 @@ export const signedInRequired = (req, res, next) => {
   if (!req.isAuthenticated()) {
     req.logout();
     return req.session.destroy(err => {
+      if (err) return res.status(500).send(err);
+
       res
         .status(401)
         .clearCookie('connect.sid')

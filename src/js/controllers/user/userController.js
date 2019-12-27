@@ -24,4 +24,14 @@ router.post('/oauth', oauthAuthenticate, (req, res) => {
   res.send({ message: 'ok' });
 });
 
+router.post('/logout', (req, res) => {
+  if (!req.isAuthenticated()) return res.send({ message: 'ok' });
+  req.logout();
+  req.session.destroy(err => {
+    if (err) return res.status(500).send(err);
+
+    res.clearCookie('connect.sid').end();
+  });
+});
+
 export default router;
