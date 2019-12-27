@@ -1,9 +1,13 @@
 import UserModel from '../../models/user/UserModel';
+import { UserNotFoundError } from '../../common/error/error';
 
 export const findUserById = userId =>
   new Promise((resolve, reject) => {
     UserModel.findById(userId)
-      .then(resolve)
+      .then(user => {
+        if (!user) return reject(new UserNotFoundError());
+        resolve(user);
+      })
       .catch(reject);
   });
 
