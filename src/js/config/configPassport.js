@@ -1,6 +1,7 @@
 import passport from 'passport';
 import FacebookTokenStrategy from 'passport-facebook-token';
 import { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET } from './config';
+import * as userService from '../services/user/userService';
 
 export default function() {
   passport.serializeUser((user, done) => {
@@ -8,8 +9,10 @@ export default function() {
   });
 
   passport.deserializeUser((id, done) => {
-    if (id) done(null, { id });
-    else done(null);
+    userService
+      .findUserById(id)
+      .then(user => done(null, user.toObject()))
+      .catch(error => done(error));
   });
 
   passport.use(
@@ -19,8 +22,10 @@ export default function() {
         clientSecret: FACEBOOK_APP_SECRET
       },
       (accessToken, refreshToken, profile, done) => {
-        const { id, displayName } = profile;
-        return done(null, { id, accessToken, displayName });
+        userService
+          .oauthLogin('facebook', profile)
+          .then(user => done(null, { id: user.id }))
+          .catch(error => done(error));
       }
     )
   );
