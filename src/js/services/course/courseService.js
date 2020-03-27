@@ -2,39 +2,29 @@ import UserModel from '../../models/user/UserModel';
 import * as UwDataService from '../uwData/uwDataService';
 import * as UserService from '../user/userService';
 
-const processCourseObject = (course, req) => {
-  if (req && req.isAuthenticated()) {
-    const { id } = req.user;
-    return UserModel.findOne({
-      _id: id,
-      shortlistedCourses: { $in: course.course_id }
-    })
-      .catch(error => {
-        console.error(error);
-        return null;
-      })
-      .then(user => Object.assign({}, course, { shortlisted: Boolean(user) }));
-  }
-  return Object.assign({}, course, { shortlisted: false });
-};
-
 export const getAllCourses = () => UwDataService.getCourses();
 
 export const getCoursesBySubject = subject =>
   UwDataService.getCoursesBySubject(subject);
 
 export const getCourseById = (courseId, req) =>
-  UwDataService.getCourseById(courseId).then(course =>
-    processCourseObject(course, req)
-  );
-
-export const getCourseByCatalogNumber = (catalogNumber, subject) =>
-  UwDataService.getCourseBySubjectAndCatalogNumber(subject, catalogNumber)
-    .then(course => processCourseObject(course))
-    .catch(err => {
-      console.error(err);
-      throw err;
-    });
+  UwDataService.getCourseById(courseId).then(course => {
+    if (req && req.isAuthenticated()) {
+      const { id } = req.user;
+      return UserModel.findOne({
+        _id: id,
+        shortlistedCourses: { $in: course.course_id }
+      })
+        .catch(error => {
+          console.error(error);
+          return null;
+        })
+        .then(user =>
+          Object.assign({}, course, { shortlisted: Boolean(user) })
+        );
+    }
+    return Object.assign({}, course, { shortlisted: false });
+  });
 
 export const shortlistCourse = (userId, courseId) =>
   new Promise((resolve, reject) => {
