@@ -12,6 +12,7 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import configDB from './config/configDB';
 import ConnectMongo from 'connect-mongo';
+import handleQuery from './middleware/handleQuery';
 
 configDB().then(dbConnection => {
   const app = express();
@@ -68,6 +69,7 @@ configDB().then(dbConnection => {
   app.use('/course', CourseController);
   app.use('/term', TermController);
   app.use('/user', UserController);
+  app.get('/search', handleQuery);
 
   app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 });
