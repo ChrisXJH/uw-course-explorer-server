@@ -24,6 +24,13 @@ router.get('/:courseId', (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
+router.get('/:subject/:catalogNumber', (req, res) => {
+  const { subject, catalogNumber } = req.params;
+  CourseService.getCourseByCatalogNumber({ catalogNumber, subject }, req)
+    .then(result => res.send(result))
+    .catch(err => res.status(500).send(err));
+});
+
 router.put('/:courseId/shortlist', signedInRequired, (req, res) => {
   const { id } = req.user;
   const { courseId } = req.params;

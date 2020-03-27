@@ -44,6 +44,12 @@ export function getCourseById(courseId) {
   return uwDataGet(`courses/${courseId}.json`).then(parseResponse);
 }
 
+export function getCourseBySubjectAndCatalogNumber(subject, catalogNumber) {
+  return uwDataGet(`courses/${subject}/${catalogNumber}.json`).then(
+    parseResponse
+  );
+}
+
 export function getTerms() {
   return uwDataGet('terms/list.json').then(parseResponse);
 }
