@@ -1,19 +1,31 @@
 import rp from 'request-promise';
 import { getUwBackendUrl, getUwApiKey } from '../../config/config';
+import LRU from 'lru-cache';
 
 const uwBackendUrl = getUwBackendUrl();
 const uwApiKey = getUwApiKey();
 
 const parseResponse = res => res.data;
 
+const lruCache = new LRU({
+  max: 400 * 1024 * 1024, // 400MB
+  maxAge: 1000 * 60 * 60 * 12 // 12 hours
+});
+
 export function uwDataGet(target) {
+  if (lruCache.has(target)) return Promise.resolve(lruCache.get(target));
+
   const options = {
     uri: `${uwBackendUrl}/${target}?key=${uwApiKey}`,
     method: 'GET',
     json: true
   };
 
-  return rp(options);
+  return rp(options).then(res => {
+    lruCache.set(target, res);
+
+    return res;
+  });
 }
 
 export function getSubjectCodes() {
