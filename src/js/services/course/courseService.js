@@ -2,6 +2,24 @@ import UserModel from '../../models/user/UserModel';
 import * as UwDataService from '../uwData/uwDataService';
 import * as UserService from '../user/userService';
 
+function parseCourses(str) {
+  if (!str) return [];
+  let match;
+  const matches = [];
+  const regex = /([A-Z]+)\s(\d+[A-Za-z]?)/g;
+
+  while ((match = regex.exec(str))) {
+    matches.push({
+      match: match[0],
+      subject: match[1],
+      catalog_number: match[2],
+      index: match.index
+    });
+  }
+
+  return matches;
+}
+
 const processCourseObject = (course, req) => {
   if (req && req.isAuthenticated()) {
     const { id } = req.user;
@@ -13,7 +31,13 @@ const processCourseObject = (course, req) => {
         console.error(error);
         return null;
       })
-      .then(user => Object.assign({}, course, { shortlisted: Boolean(user) }));
+      .then(user =>
+        Object.assign({}, course, {
+          shortlisted: Boolean(user),
+          preReqCourseMatches: parseCourses(course.prerequisites),
+          antiReqCourseMatches: parseCourses(course.antirequisites)
+        })
+      );
   }
   return Object.assign({}, course, { shortlisted: false });
 };
