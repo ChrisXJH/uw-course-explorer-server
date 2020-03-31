@@ -33,7 +33,7 @@ const courseOptions = {
 };
 
 export default function(req, res) {
-  const { query } = req.query;
+  const { query, count } = req.query;
   const subjectsPromise = getSubjects();
   const coursesPromise = getCourses();
 
@@ -59,7 +59,7 @@ export default function(req, res) {
         return item;
       });
 
-      return [...subjectResults, ...courseResults];
+      return [...subjectResults, ...courseResults].slice(0, count);
     })
     .then(result => res.send(result))
     .catch(err => {
