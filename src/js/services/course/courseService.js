@@ -20,26 +20,37 @@ function parseCourses(str) {
   return matches;
 }
 
-const processCourseObject = (course, req) => {
-  if (req && req.isAuthenticated()) {
-    const { id } = req.user;
-    return UserModel.findOne({
-      _id: id,
-      shortlistedCourses: { $in: course.course_id }
-    })
-      .catch(error => {
-        console.error(error);
-        return null;
-      })
-      .then(user =>
-        Object.assign({}, course, {
-          shortlisted: Boolean(user),
-          preReqCourseMatches: parseCourses(course.prerequisites),
-          antiReqCourseMatches: parseCourses(course.antirequisites)
-        })
-      );
+const setShortlisted = (course, req) => {
+  if (!req || !req.isAuthenticated()) {
+    course.shortlisted = false;
+    return Promise.resolve(course);
   }
-  return Object.assign({}, course, { shortlisted: false });
+
+  const { id } = req.user;
+
+  return UserModel.findOne({
+    _id: id,
+    shortlistedCourses: { $in: course.course_id }
+  })
+    .catch(error => {
+      console.error(error);
+
+      return course;
+    })
+    .then(user => {
+      course.shortlisted = Boolean(user);
+
+      return course;
+    });
+};
+
+const processCourseObject = (course, req) => {
+  return setShortlisted(course, req).then(course => {
+    course.preReqCourseMatches = parseCourses(course.prerequisites);
+    course.antiReqCourseMatches = parseCourses(course.antirequisites);
+
+    return course;
+  });
 };
 
 export const getAllCourses = () => UwDataService.getCourses();
