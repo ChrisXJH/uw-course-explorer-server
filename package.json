@@ -4,8 +4,8 @@
   "description": "Server side for UwCourseExplorer",
   "main": "dist/js/index.js",
   "scripts": {
-    "build": "babel --presets es2015 -d dist/js/ src/js/",
-    "build-test": "babel --presets es2015 -d dist/test/ src/test/",
+    "build": "babel -d dist/js/ src/js/ --copy-files",
+    "build-test": "babel -d dist/test/ src/test/",
     "start": "npm run build && node dist/js",
     "test": "npm run build-test && mocha dist/test/**/*-test.js"
   },
@@ -23,12 +23,13 @@
   },
   "homepage": "https://github.com/ChrisXJH/uw-course-explorer-server#readme",
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1",
     "chai": "^4.2.0",
     "mocha": "^6.1.4"
   },
   "dependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
     "body-parser": "^1.19.0",
     "connect-mongo": "^3.2.0",
     "cookie-parser": "^1.4.4",
