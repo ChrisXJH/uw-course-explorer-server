@@ -12,11 +12,15 @@ const userSchema = new Schema({
   shortlistedCourses: {
     type: [{ type: String }],
     default: []
+  },
+  coursesTaken: {
+    type: [{ type: String }],
+    default: []
   }
 });
 
 userSchema.set('toObject', {
-  transform: function(doc, ret) {
+  transform: function (doc, ret) {
     delete ret._id;
     delete ret.created;
     delete ret.oauth;

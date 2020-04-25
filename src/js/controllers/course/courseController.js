@@ -31,12 +31,39 @@ router.get('/:subject/:catalogNumber', (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
+router.put('/:subject/:catalogNumber/markTaken', (req, res) => {
+  const { id } = req.user;
+  const { subject, catalogNumber } = req.params;
+
+  CourseService.markCourseTaken(id, subject, catalogNumber)
+    .then(() => res.send({ code: 'SUCCESS' }))
+    .catch(error => {
+      console.error(error);
+      res.send({ code: 'FAILURE' });
+    });
+});
+
+router.put('/:subject/:catalogNumber/unMarkTaken', (req, res) => {
+  const { id } = req.user;
+  const { subject, catalogNumber } = req.params;
+
+  CourseService.unMarkCourseTaken(id, subject, catalogNumber)
+    .then(() => res.send({ code: 'SUCCESS' }))
+    .catch(error => {
+      console.error(error);
+      res.send({ code: 'FAILURE' });
+    });
+});
+
 router.put('/:courseId/shortlist', signedInRequired, (req, res) => {
   const { id } = req.user;
   const { courseId } = req.params;
   CourseService.shortlistCourse(id, courseId)
     .then(() => res.send({ message: 'success' }))
-    .catch(err => res.status(500).send(err));
+    .catch(err => {
+      console.error(err);
+      res.status(500).send(err);
+    });
 });
 
 router.put('/:courseId/unshortlist', signedInRequired, (req, res) => {
