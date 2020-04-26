@@ -23,9 +23,6 @@ userSchema.set('toObject', {
   transform: function (doc, ret) {
     const courseMap = require('../../data/courseMap.json');
 
-    delete ret._id;
-    delete ret.created;
-    delete ret.oauth;
     ret.coursesTaken = ret.coursesTaken.map(course => {
       const courseObj = courseMap[course];
       if (!courseObj) return {};

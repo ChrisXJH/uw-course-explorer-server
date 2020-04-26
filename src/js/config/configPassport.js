@@ -3,9 +3,9 @@ import FacebookTokenStrategy from 'passport-facebook-token';
 import { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET } from './config';
 import * as userService from '../services/user/userService';
 
-export default function() {
+export default function () {
   passport.serializeUser((user, done) => {
-    done(null, user.id);
+    done(null, user._id);
   });
 
   passport.deserializeUser((id, done) => {
@@ -24,7 +24,7 @@ export default function() {
       (accessToken, refreshToken, profile, done) => {
         userService
           .oauthLogin('facebook', profile)
-          .then(user => done(null, { id: user.id }))
+          .then(user => done(null, user))
           .catch(error => done(error));
       }
     )

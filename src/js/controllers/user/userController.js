@@ -8,11 +8,39 @@ import * as userService from '../../services/user/userService';
 const router = Router();
 
 router.get('/', signedInRequired, (req, res) => {
-  const { id } = req.user;
+  const { _id, shortlistedCourses, coursesTaken, displayName } = req.user;
+
+  res.send({ id: _id, shortlistedCourses, coursesTaken, displayName });
+});
+
+router.get('/coursesTaken', signedInRequired, (req, res) => {
+  const result = userService.getCoursesTaken(req.user);
+
+  res.send(result);
+});
+
+router.post('/coursesTaken', signedInRequired, (req, res) => {
+  const { user, body } = req;
+
   userService
-    .getUserInfo(id)
-    .then(user => res.send(user.toObject()))
-    .catch(error => res.status(500).send(error));
+    .markCourseTaken(user._id, body.subject, body.catalogNumber)
+    .then(coursesTaken => res.send({ code: 'SUCCESS', coursesTaken }))
+    .catch(error => {
+      console.error(error);
+      res.send({ code: 'FAILURE' });
+    });
+});
+
+router.delete('/coursesTaken', signedInRequired, (req, res) => {
+  const { user, query } = req;
+
+  userService
+    .unMarkCourseTaken(user._id, query.subject, query.catalogNumber)
+    .then(coursesTaken => res.send({ code: 'SUCCESS', coursesTaken }))
+    .catch(error => {
+      console.error(error);
+      res.send({ code: 'FAILURE' });
+    });
 });
 
 router.get('/status', (req, res) => {

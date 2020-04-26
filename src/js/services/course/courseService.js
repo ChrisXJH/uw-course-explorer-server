@@ -1,7 +1,6 @@
 import UserModel from '../../models/user/UserModel';
 import * as UwDataService from '../uwData/uwDataService';
 import * as UserService from '../user/userService';
-import { getCourseCode } from '../../utils/utils';
 
 function parseCourses(str) {
   if (!str) return [];
@@ -122,25 +121,3 @@ export const getShortlistedCourses = userId =>
       return null;
     })
     .then(courses => courses.filter(course => course));
-
-export const markCourseTaken = (userId, subject, catalogNumber) =>
-  UserModel.updateOne(
-    { _id: userId },
-    {
-      $addToSet: {
-        coursesTaken: getCourseCode(subject, catalogNumber)
-      }
-    }
-  ).then(({ nModified }) => {
-    if (nModified === 0) throw new Error('Failed to add to taken list.');
-  });
-
-export const unMarkCourseTaken = (userId, subject, catalogNumber) =>
-  UserModel.updateOne(
-    { _id: userId },
-    {
-      $pull: { coursesTaken: getCourseCode(subject, catalogNumber) }
-    }
-  ).then(({ nModified }) => {
-    if (nModified === 0) throw new Error('Failed to remove from taken list.');
-  });
