@@ -11,8 +11,9 @@ router.get('/', (req, res) => {
 });
 
 router.get('/shortlist', signedInRequired, (req, res) => {
-  const { id } = req.user;
-  CourseService.getShortlistedCourses(id)
+  const { user } = req;
+
+  CourseService.getShortlistedCourses(user._id)
     .then(courses => res.send(courses))
     .catch(err => res.status(500).send(err));
 });
@@ -32,17 +33,20 @@ router.get('/:subject/:catalogNumber', (req, res) => {
 });
 
 router.put('/:courseId/shortlist', signedInRequired, (req, res) => {
-  const { id } = req.user;
-  const { courseId } = req.params;
-  CourseService.shortlistCourse(id, courseId)
+  const { user, params } = req;
+
+  CourseService.shortlistCourse(user._id, params.courseId)
     .then(() => res.send({ message: 'success' }))
-    .catch(err => res.status(500).send(err));
+    .catch(err => {
+      console.error(err);
+      res.status(500).send(err);
+    });
 });
 
 router.put('/:courseId/unshortlist', signedInRequired, (req, res) => {
-  const { id } = req.user;
-  const { courseId } = req.params;
-  CourseService.unshortlistCourse(id, courseId)
+  const { user, params } = req;
+
+  CourseService.unshortlistCourse(user._id, params.courseId)
     .then(() => res.send({ message: 'success' }))
     .catch(err => res.status(500).send(err));
 });
