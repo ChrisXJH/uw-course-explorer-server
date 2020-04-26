@@ -8,9 +8,21 @@ import * as userService from '../../services/user/userService';
 const router = Router();
 
 router.get('/', signedInRequired, (req, res) => {
-  const { _id, shortlistedCourses, coursesTaken, displayName } = req.user;
+  const {
+    _id,
+    shortlistedCourses,
+    coursesTaken,
+    displayName,
+    avatarUrl
+  } = req.user;
 
-  res.send({ id: _id, shortlistedCourses, coursesTaken, displayName });
+  res.send({
+    id: _id,
+    shortlistedCourses,
+    coursesTaken,
+    displayName,
+    avatarUrl
+  });
 });
 
 router.get('/coursesTaken', signedInRequired, (req, res) => {

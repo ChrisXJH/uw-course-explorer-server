@@ -2,6 +2,7 @@ import { Schema, model } from 'mongoose';
 
 const userSchema = new Schema({
   displayName: String,
+  avatarUrl: { type: String },
   created: { type: Date, default: Date.now },
   oauth: [
     {

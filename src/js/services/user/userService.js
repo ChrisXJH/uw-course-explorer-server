@@ -22,9 +22,13 @@ export const oauthLogin = (provider, profile) =>
       }
     })
       .then(foundUser => {
+        const avatar = profile.photos[0] || {};
+        const avatarUrl = avatar.value || '';
+
         if (!foundUser) {
           const newUser = new UserModel({
             displayName: profile.displayName,
+            avatarUrl,
             oauth: [{ id: profile.id, provider }]
           });
           return newUser.save().then(resolve);
