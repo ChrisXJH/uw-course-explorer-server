@@ -18,6 +18,13 @@ router.get('/shortlist', signedInRequired, (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
+router.get('/unlockedCourses', signedInRequired, (req, res) => {
+  const { user } = req;
+  const courses = CourseService.getUnlockedCourses(user);
+
+  res.send({ courses });
+});
+
 router.get('/:courseId', (req, res) => {
   const { courseId } = req.params;
   CourseService.getCourseById(courseId, req)
