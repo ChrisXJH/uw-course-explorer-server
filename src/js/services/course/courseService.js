@@ -1,6 +1,9 @@
 import UserModel from '../../models/user/UserModel';
 import * as UwDataService from '../uwData/uwDataService';
 import * as UserService from '../user/userService';
+import { getCourseCode } from '../../utils/utils';
+import CourseNode from '../../common/classes/CourseNode';
+import fs from 'fs';
 
 function parseCourses(str) {
   if (!str) return [];
@@ -121,3 +124,48 @@ export const getShortlistedCourses = userId =>
       return null;
     })
     .then(courses => courses.filter(course => course));
+
+export const getUnlockedCourses = user => {
+  const adjacencyList = require('../../data/coursesAdjList.json');
+  const courseMapData = JSON.parse(
+    fs.readFileSync('./src/js/data/courseMap.json')
+  );
+  const courseMap = new Map();
+  const allCoursesData = Object.values(courseMapData);
+
+  allCoursesData.forEach(
+    ({ name, title, subject, catalogNumber, prerequisites }) =>
+      courseMap.set(
+        name,
+        new CourseNode({ name, title, subject, catalogNumber, prerequisites })
+      )
+  );
+
+  const coursesTaken = user.coursesTaken.map(({ subject, catalogNumber }) =>
+    getCourseCode(subject, catalogNumber)
+  );
+
+  const result = allCoursesData
+    .map(({ name }) => courseMap.get(name))
+    .filter(course => course.isFulfilled());
+
+  coursesTaken
+    .filter(course => courseMap.has(course))
+    .map(course => courseMap.get(course))
+    .forEach(course => {
+      const name = course.getName();
+
+      if (!adjacencyList[name]) return;
+
+      adjacencyList[name].forEach(nextCourse => {
+        if (!courseMap.has(nextCourse)) return;
+
+        const courseNode = courseMap.get(nextCourse);
+
+        courseNode.removePrerequisite(name);
+        if (courseNode.isFulfilled()) result.push(courseNode);
+      });
+    });
+
+  return result.map(course => course.toJSON());
+};
