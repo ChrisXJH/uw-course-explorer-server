@@ -42,7 +42,11 @@ configDB().then(dbConnection => {
       secret: getSecret(),
       resave: false,
       saveUninitialized: false,
-      cookie: { secure: getEnv() === 'prod', maxAge: 7 * 24 * 60 * 60 * 1000 },
+      cookie: {
+        secure: getEnv() === 'prod',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        sameSite: 'none'
+      },
       store: new MongoStore({
         mongooseConnection: dbConnection
       })

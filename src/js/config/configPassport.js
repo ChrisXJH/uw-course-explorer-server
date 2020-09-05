@@ -12,10 +12,7 @@ export default function () {
     userService
       .findUserById(id)
       .then(user => done(null, user.toObject()))
-      .catch(error => {
-        console.error(error);
-        done(error);
-      });
+      .catch(error => done(error));
   });
 
   passport.use(
